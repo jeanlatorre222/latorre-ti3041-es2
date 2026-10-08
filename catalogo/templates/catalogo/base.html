@@ -27,6 +27,17 @@
 		</div>
 	</nav>
 
+	{% if messages %}
+	<div class="container pt-3" aria-live="polite">
+		{% for message in messages %}
+		<div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+			{{ message }}
+			<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+		</div>
+		{% endfor %}
+	</div>
+	{% endif %}
+
 	<div class="offcanvas offcanvas-end" tabindex="-1" id="carritoOffcanvas" aria-labelledby="carritoOffcanvasLabel">
 		<div class="offcanvas-header">
 			<h2 class="offcanvas-title h5" id="carritoOffcanvasLabel">Carrito de compras</h2>
@@ -40,17 +51,6 @@
 					<div class="d-flex justify-content-between gap-2">
 						<div>
 							<strong>{{ item.producto.nombre }}</strong>
-						{% if messages %}
-						<div class="container pt-3" aria-live="polite">
-							{% for message in messages %}
-							<div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
-								{{ message }}
-								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-							</div>
-							{% endfor %}
-						</div>
-						{% endif %}
-
 							<div class="small text-muted">${{ item.producto.precio }} x {{ item.cantidad }}</div>
 						</div>
 						<strong>${{ item.subtotal }}</strong>
@@ -74,7 +74,10 @@
 					<span>Total a pagar</span>
 					<span>${{ carrito_total }}</span>
 				</div>
-				<a href="{% url 'finalizar_compra' %}" class="btn btn-success w-100">Finalizar Pseudo Compra</a>
+				<form method="post" action="{% url 'procesar_compra' %}">
+					{% csrf_token %}
+					<button type="submit" class="btn btn-success w-100">Finalizar Compra</button>
+				</form>
 				<a href="{% url 'vaciar_carrito' %}" class="d-block text-center text-danger mt-2">Vaciar carrito</a>
 			</div>
 			{% else %}

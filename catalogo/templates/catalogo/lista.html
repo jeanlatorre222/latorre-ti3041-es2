@@ -1,4 +1,5 @@
 {% extends 'catalogo/base.html' %}
+{% load humanize %}
 
 {% block title %}Productos | Ferretería{% endblock %}
 
@@ -11,7 +12,7 @@
 <form method="get" class="row g-2 mb-4">
 	<div class="col">
 		<label for="busqueda" class="visually-hidden">Buscar productos</label>
-		<input id="busqueda" type="search" name="q" value="{{ q }}" class="form-control" placeholder="Buscar por nombre o categoría">
+		<input id="busqueda" type="search" name="q" value="{{ query }}" class="form-control" placeholder="Buscar por nombre o categoría">
 	</div>
 	<div class="col-auto">
 		<button type="submit" class="btn btn-primary">Buscar</button>
@@ -62,8 +63,14 @@
 				</td>
 				<td>{{ producto.nombre }}</td>
 				<td>{{ producto.categoria }}</td>
-				<td>${{ producto.precio }}</td>
-				<td>{{ producto.stock }}</td>
+				<td>${{ producto.precio|intcomma }}</td>
+				<td>
+					{% if producto.stock == 0 %}
+					<span class="badge text-bg-danger">Agotado</span>
+					{% else %}
+					{{ producto.stock }}
+					{% endif %}
+				</td>
 				<td>
 					<a href="{% url 'detalle_producto' producto.id %}" class="btn btn-primary btn-sm">Ver Detalle</a>
 					{% if producto.stock > 0 %}
@@ -73,7 +80,10 @@
 				{% if user.is_authenticated %}
 				<td>
 					<a href="{% url 'editar_producto' producto.id %}" class="btn btn-warning btn-sm">Editar</a>
-					<a href="{% url 'eliminar_producto' producto.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+					<form method="post" action="{% url 'eliminar_producto' producto.id %}" class="d-inline">
+						{% csrf_token %}
+						<button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+					</form>
 				</td>
 				{% endif %}
 			</tr>

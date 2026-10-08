@@ -21,11 +21,11 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="precio" class="form-label">Precio</label>
-                            <input id="precio" name="precio" type="number" min="0" step="1" class="form-control" required value="{{ producto.precio|default:0 }}">
+                            <input id="precio" name="precio" type="number" min="0" step="1" class="form-control" required value="{{ producto.precio }}">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="stock" class="form-label">Stock</label>
-                            <input id="stock" name="stock" type="number" min="0" step="1" class="form-control" required value="{{ producto.stock|default:0 }}">
+                            <input id="stock" name="stock" type="number" min="0" step="1" class="form-control" required value="{{ producto.stock }}">
                         </div>
                     </div>
                     <div class="mb-3">
