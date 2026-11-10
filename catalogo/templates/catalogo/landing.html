@@ -1,52 +1,218 @@
 {% extends 'catalogo/base.html' %}
+{% load humanize static %}
 
-{% block title %}Ferretería | Herramientas y materiales{% endblock %}
+{% block title %}Ferretería | Precisión y equipamiento{% endblock %}
+{% block body_class %}home-page{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'catalogo/css/landing.css' %}?v=12">
+{% endblock %}
+{% block main_class %}home-main{% endblock %}
 
 {% block content %}
-<section class="p-4 p-md-5 mb-5 text-white bg-dark rounded-3 shadow-sm">
-    <div class="row align-items-center g-4">
-        <div class="col-lg-8">
-            <p class="text-uppercase fw-semibold text-warning mb-2">Suministros para cada proyecto</p>
-            <h1 class="display-4 fw-bold">Todo lo que necesitas para construir mejor.</h1>
-            <p class="lead mb-4">Encuentra herramientas, fijaciones, pinturas y materiales confiables para tu próximo trabajo.</p>
-            <a href="{% url 'lista_productos' %}" class="btn btn-warning btn-lg me-2">Ver catálogo</a>
-            {% if not user.is_authenticated %}
-            <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">Iniciar sesión</a>
-            {% endif %}
+<section class="home-hero" id="home-start">
+    <img class="home-hero__image" src="{% static 'catalogo/img/ferreteria-hero.jpg' %}" alt="" fetchpriority="high" aria-hidden="true">
+    <div class="home-hero__shade" aria-hidden="true"></div>
+    <div class="home-shell home-hero__layout">
+        <div class="home-hero__copy">
+            <p class="home-eyebrow"><span></span> Equipamiento para profesionales</p>
+            <h1><span>Precisión</span> en cada proyecto.<br>Potencia en cada detalle.</h1>
+            <p class="home-hero__lead">Herramientas y materiales seleccionados para quienes exigen más de cada trabajo.</p>
+            <div class="home-hero__actions">
+                <a class="home-button home-button--primary" href="{% url 'lista_productos' %}">
+                    Explorar catálogo <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
+                </a>
+                {% if not user.is_authenticated %}
+                <a class="home-button home-button--secondary" href="{% url 'login' %}">Iniciar sesión <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+                {% else %}
+                <a class="home-button home-button--secondary" href="{% url 'crear_producto' %}">Administrar productos <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+                {% endif %}
+            </div>
         </div>
-        <div class="col-lg-4 text-center">
-            <div class="display-1" aria-hidden="true">&#128295;</div>
-            <p class="mb-0 text-white-50">Herramientas listas para trabajar</p>
+        <div class="home-hero__caption" aria-hidden="true">
+            <span>01 — EQUIPO PROFESIONAL</span>
+            <span>HERRAMIENTAS · MATERIALES · PRECISIÓN</span>
+        </div>
+    </div>
+    <a class="home-hero__scroll" href="#categories-title" aria-label="Desplazarse a categorías"><span></span> DESLIZA</a>
+</section>
+
+<section class="home-section home-categories" aria-labelledby="categories-title">
+    <div class="home-shell">
+        <div class="home-section__heading">
+            <div>
+                <p class="home-eyebrow"><span></span> 01 / SELECCIÓN</p>
+                <h2 id="categories-title">El equipo correcto.<br><span>El trabajo bien hecho.</span></h2>
+            </div>
+            <a class="home-text-link" href="{% url 'lista_productos' %}">Ver todo el catálogo <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+        </div>
+        <div class="home-category-grid">
+            <a class="home-category-card home-category-card--tools" href="{% url 'lista_productos' %}?q=Herramientas">
+                <span class="home-category-card__number">01</span>
+                <span class="home-category-card__icon"><i class="bi bi-tools" aria-hidden="true"></i></span>
+                <span class="home-category-card__content"><strong>Herramientas</strong><small>Precisión en cada tarea</small></span>
+                <i class="bi bi-arrow-up-right home-category-card__arrow" aria-hidden="true"></i>
+            </a>
+            <a class="home-category-card home-category-card--materials" href="{% url 'lista_productos' %}?q=Materiales">
+                <span class="home-category-card__number">02</span>
+                <span class="home-category-card__icon"><i class="bi bi-bricks" aria-hidden="true"></i></span>
+                <span class="home-category-card__content"><strong>Materiales</strong><small>La base de un gran trabajo</small></span>
+                <i class="bi bi-arrow-up-right home-category-card__arrow" aria-hidden="true"></i>
+            </a>
+            <a class="home-category-card home-category-card--electric" href="{% url 'lista_productos' %}?q=Electricidad">
+                <span class="home-category-card__number">03</span>
+                <span class="home-category-card__icon"><i class="bi bi-lightning-charge" aria-hidden="true"></i></span>
+                <span class="home-category-card__content"><strong>Electricidad</strong><small>Conexiones seguras y confiables</small></span>
+                <i class="bi bi-arrow-up-right home-category-card__arrow" aria-hidden="true"></i>
+            </a>
+            <a class="home-category-card home-category-card--paint" href="{% url 'lista_productos' %}?q=Pinturas">
+                <span class="home-category-card__number">04</span>
+                <span class="home-category-card__icon"><i class="bi bi-paint-bucket" aria-hidden="true"></i></span>
+                <span class="home-category-card__content"><strong>Pinturas</strong><small>Un acabado que destaca</small></span>
+                <i class="bi bi-arrow-up-right home-category-card__arrow" aria-hidden="true"></i>
+            </a>
         </div>
     </div>
 </section>
 
-<section class="mb-5">
-    <div class="row g-4">
-        <div class="col-md-6">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="fs-2 text-warning mb-3" aria-hidden="true">&#128736;</div>
-                    <h2 class="h4">Catálogo completo</h2>
-                    <p class="text-muted">Explora herramientas manuales, eléctricas, pinturas y accesorios.</p>
-                    <a href="{% url 'lista_productos' %}" class="btn btn-outline-dark">Ver productos</a>
-                </div>
+<section class="home-section home-products" aria-labelledby="products-title">
+    <div class="home-shell">
+        <div class="home-section__heading">
+            <div>
+                <p class="home-eyebrow"><span></span> 02 / DESTACADOS</p>
+                <h2 id="products-title">Herramientas que<br><span>marcan la diferencia.</span></h2>
             </div>
+            <a class="home-text-link" href="{% url 'lista_productos' %}">Descubrir productos <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
         </div>
-        <div class="col-md-6">
-            <div class="card h-100 border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="fs-2 text-warning mb-3" aria-hidden="true">&#128274;</div>
-                    <h2 class="h4">Acceso para administrar</h2>
-                    <p class="text-muted">Inicia sesión para crear, editar o eliminar productos.</p>
-                    {% if user.is_authenticated %}
-                    <a href="{% url 'crear_producto' %}" class="btn btn-outline-dark">Crear producto</a>
+
+        {% if productos_destacados %}
+        <div class="home-product-grid">
+            {% for producto in productos_destacados %}
+            <article class="home-product-card">
+                <a class="home-product-card__image" href="{% url 'detalle_producto' producto.id %}" aria-label="Ver {{ producto.nombre }}">
+                    {% if producto.imagen %}
+                    <img src="{{ producto.imagen }}" alt="{{ producto.nombre }}" loading="lazy">
                     {% else %}
-                    <a href="{% url 'login' %}" class="btn btn-outline-dark">Iniciar sesión</a>
+                    <span class="home-product-card__placeholder" aria-hidden="true"><i class="bi bi-box-seam"></i></span>
                     {% endif %}
+                    {% if producto.stock > 0 %}
+                    <span class="home-product-card__badge"><span></span> Disponible</span>
+                    {% else %}
+                    <span class="home-product-card__badge home-product-card__badge--out"><span></span> Agotado</span>
+                    {% endif %}
+                </a>
+                <div class="home-product-card__body">
+                    <p class="home-product-card__category">{{ producto.categoria }}</p>
+                    <h3><a href="{% url 'detalle_producto' producto.id %}">{{ producto.nombre }}</a></h3>
+                    <div class="home-product-card__footer">
+                        <strong class="home-product-card__price">${{ producto.precio|intcomma }}</strong>
+                        {% if producto.stock > 0 %}
+                        <a class="home-product-card__add" href="{% url 'agregar_al_carrito' producto.id %}" aria-label="Agregar {{ producto.nombre }} al carrito" title="Agregar al carrito">
+                            <i class="bi bi-bag-plus" aria-hidden="true"></i>
+                        </a>
+                        {% else %}
+                        <span class="home-product-card__add home-product-card__add--disabled" aria-label="Producto agotado">
+                            <i class="bi bi-bag" aria-hidden="true"></i>
+                        </span>
+                        {% endif %}
+                    </div>
                 </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="home-empty">
+            <i class="bi bi-box-seam" aria-hidden="true"></i>
+            <div>
+                <h3>Pronto encontrarás productos destacados aquí.</h3>
+                <p>Mientras tanto, visita el catálogo para explorar la selección completa.</p>
             </div>
+            <a class="home-button home-button--secondary" href="{% url 'lista_productos' %}">Ir al catálogo</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<section class="home-benefits" aria-label="Beneficios de comprar en Ferretería">
+    <div class="home-shell home-benefits__grid">
+        <div class="home-benefit">
+            <span class="home-benefit__index">01</span>
+            <span class="home-benefit__icon"><i class="bi bi-truck" aria-hidden="true"></i></span>
+            <span><strong>Despacho a todo Chile</strong><small>Tu proyecto no se detiene</small></span>
+        </div>
+        <div class="home-benefit">
+            <span class="home-benefit__index">02</span>
+            <span class="home-benefit__icon"><i class="bi bi-shield-check" aria-hidden="true"></i></span>
+            <span><strong>Compra 100% segura</strong><small>Tus datos, siempre protegidos</small></span>
+        </div>
+        <div class="home-benefit">
+            <span class="home-benefit__index">03</span>
+            <span class="home-benefit__icon"><i class="bi bi-award" aria-hidden="true"></i></span>
+            <span><strong>Calidad garantizada</strong><small>Respaldo para cada trabajo</small></span>
         </div>
     </div>
 </section>
+
+<footer class="home-footer" id="home-footer">
+    <div class="home-shell">
+        <div class="home-footer__main">
+            <section class="home-footer__contact" aria-labelledby="footer-contact-title">
+                <a class="home-footer__brand" href="{% url 'landing_page' %}">FERRETERÍA<span>.</span></a>
+                <h2 id="footer-contact-title">Atención al cliente</h2>
+                <p class="home-footer__intro">Estamos para ayudarte a encontrar el equipo correcto para cada proyecto.</p>
+                <a class="home-footer__support" href="mailto:contacto@ferreteria.cl">
+                    <span class="home-footer__status-dot"></span>
+                    Atención digital 24/7
+                </a>
+                <div class="home-footer__contact-list">
+                    <a href="tel:+56912345678"><i class="bi bi-telephone" aria-hidden="true"></i> +56 9 1234 5678</a>
+                    <a href="tel:6008009000"><i class="bi bi-headset" aria-hidden="true"></i> 600 800 9000</a>
+                    <a href="mailto:contacto@ferreteria.cl"><i class="bi bi-envelope" aria-hidden="true"></i> contacto@ferreteria.cl</a>
+                </div>
+                <div class="home-footer__hours">
+                    <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                    <span><strong>Casa matriz</strong><small>Dirección de tienda por confirmar</small></span>
+                </div>
+                <div class="home-footer__hours">
+                    <i class="bi bi-clock" aria-hidden="true"></i>
+                    <span><strong>Horario de atención</strong><small>Lun–Vie, 09:00–18:00 · Horario de Chile</small></span>
+                </div>
+            </section>
+
+            <nav class="home-footer__nav" aria-label="Enlaces corporativos">
+                <h2>Empresa</h2>
+                <a href="{% url 'landing_page' %}">Quiénes somos</a>
+                <a href="mailto:contacto@ferreteria.cl?subject=Aviso%20legal%20y%20privacidad">Aviso legal y privacidad</a>
+                <a href="mailto:contacto@ferreteria.cl?subject=T%C3%A9rminos%20y%20condiciones">Términos y condiciones</a>
+                <a href="{% url 'lista_productos' %}">Mapa del sitio</a>
+                <a href="mailto:contacto@ferreteria.cl?subject=Preguntas%20frecuentes">Preguntas frecuentes</a>
+            </nav>
+
+            <section class="home-footer__updates" aria-labelledby="footer-news-title">
+                <p class="home-eyebrow"><span></span> Novedades</p>
+                <h2 id="footer-news-title">Recibe ofertas exclusivas.</h2>
+                <p>Promociones y novedades para tus próximos proyectos.</p>
+                <form class="home-footer__newsletter">
+                    <label class="visually-hidden" for="footer-email">Tu correo electrónico</label>
+                    <input id="footer-email" type="email" placeholder="Tu correo electrónico" disabled>
+                    <button type="button" disabled aria-label="Suscripción próximamente">
+                        <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
+                    </button>
+                </form>
+                <small class="home-footer__newsletter-note">Suscripción próximamente · Servicio en preparación</small>
+                <div class="home-footer__social">
+                    <span class="home-footer__social-label">Síguenos</span>
+                    <span class="home-footer__social-icons" role="group" aria-label="Perfiles sociales pendientes de configurar">
+                        <span title="Instagram — perfil pendiente"><i class="bi bi-instagram" aria-hidden="true"></i></span>
+                        <span title="Facebook — perfil pendiente"><i class="bi bi-facebook" aria-hidden="true"></i></span>
+                        <span title="YouTube — perfil pendiente"><i class="bi bi-youtube" aria-hidden="true"></i></span>
+                    </span>
+                </div>
+            </section>
+        </div>
+        <div class="home-footer__bottom">
+            <span>© {% now "Y" %} Ferretería. Todos los derechos reservados.</span>
+            <a href="#home-start">Volver arriba <i class="bi bi-arrow-up" aria-hidden="true"></i></a>
+        </div>
+    </div>
+</footer>
 {% endblock %}

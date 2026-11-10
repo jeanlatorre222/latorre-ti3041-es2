@@ -14,7 +14,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 
-from .models import Producto
+from .forms import PerfilDatosForm
+from .models import ItemPedido, Pedido, Producto
 
 
 PRODUCTOS_JSON = Path(settings.BASE_DIR) / 'catalogo' / 'data' / 'productos.json'
@@ -50,8 +51,37 @@ def logout_view(request):
 	return redirect('lista_productos')
 
 
+@login_required(login_url='login')
+def perfil_view(request):
+	usuario = request.user
+	datos_iniciales = {
+		'first_name': usuario.first_name,
+		'last_name': usuario.last_name,
+		'email': usuario.email,
+	}
+	formulario = PerfilDatosForm(request.POST or None, initial=datos_iniciales)
+
+	if request.method == 'POST' and formulario.is_valid():
+		usuario.first_name = formulario.cleaned_data['first_name']
+		usuario.last_name = formulario.cleaned_data['last_name']
+		usuario.email = formulario.cleaned_data['email']
+		usuario.save(update_fields=['first_name', 'last_name', 'email'])
+		messages.success(request, 'Tus datos personales se actualizaron correctamente.')
+		return redirect('perfil')
+
+	pedidos = Pedido.objects.filter(usuario=usuario).prefetch_related('items')
+	return render(request, 'catalogo/perfil.html', {
+		'formulario': formulario,
+		'pedidos': pedidos,
+		'cantidad_pedidos': pedidos.count(),
+	})
+
+
 def landing_page(request):
-	return render(request, 'catalogo/landing.html')
+	productos_destacados = Producto.objects.filter(stock__gt=0).order_by('id')[:4]
+	return render(request, 'catalogo/landing.html', {
+		'productos_destacados': productos_destacados,
+	})
 
 
 def lista_productos(request):
@@ -260,6 +290,22 @@ def procesar_compra(request):
 		for producto, cantidad in seleccionados:
 			producto.stock = max(producto.stock - cantidad, 0)
 			producto.save()
+
+		if request.user.is_authenticated:
+			pedido = Pedido.objects.create(
+				usuario=request.user,
+				total=sum(producto.precio * cantidad for producto, cantidad in seleccionados),
+			)
+			ItemPedido.objects.bulk_create([
+				ItemPedido(
+					pedido=pedido,
+					producto=producto,
+					nombre_producto=producto.nombre,
+					precio_unitario=producto.precio,
+					cantidad=cantidad,
+				)
+				for producto, cantidad in seleccionados
+			])
 
 	request.session.pop(CLAVE_CARRITO, None)
 	request.session.pop(CLAVE_SUBTOTALES_CARRITO, None)
