@@ -1,8 +1,10 @@
 import json
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from django.conf import settings
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
@@ -14,13 +16,21 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 
-from .forms import PerfilDatosForm
+from .forms import DireccionDespachoForm, PerfilDatosForm, RegistroClienteForm
 from .models import ItemPedido, Pedido, Producto
 
 
 PRODUCTOS_JSON = Path(settings.BASE_DIR) / 'catalogo' / 'data' / 'productos.json'
 CLAVE_CARRITO = 'carrito'
 CLAVE_SUBTOTALES_CARRITO = 'carrito_subtotales'
+CLAVE_DIRECCION_PERFIL = 'perfil_direccion_despacho'
+CLAVE_PREFERENCIAS_PERFIL = 'perfil_preferencias'
+CLAVE_HISTORIAL_OCULTO = 'perfil_historial_oculto'
+PREFERENCIAS_PERFIL_PREDETERMINADAS = {
+	'alertas_pedidos': True,
+	'descuentos': True,
+	'historial_en_sesion': False,
+}
 
 
 def _cargar_productos():
@@ -33,17 +43,65 @@ def _guardar_productos(productos):
 		json.dump(productos, archivo, ensure_ascii=False, indent=2)
 
 
-def login_view(request):
-	if request.user.is_authenticated:
+def _es_retorno_checkout(url):
+	return urlsplit(url).path in {
+		reverse('procesar_compra'),
+		reverse('finalizar_compra'),
+	}
+
+
+def _redirigir_despues_de_autenticacion(request, url):
+	if not url or not url_has_allowed_host_and_scheme(
+		url,
+		allowed_hosts={request.get_host()},
+		require_https=request.is_secure(),
+	):
 		return redirect('lista_productos')
+
+	if _es_retorno_checkout(url):
+		return redirect(f"{reverse('lista_productos')}?carrito=abierto#carritoOffcanvas")
+
+	return redirect(url)
+
+
+def login_view(request):
+	next_url = request.POST.get('next') or request.GET.get('next', '')
+	contexto = {
+		'next': next_url,
+		'checkout_requiere_autenticacion': _es_retorno_checkout(next_url),
+	}
+
+	if request.user.is_authenticated:
+		return _redirigir_despues_de_autenticacion(request, next_url)
 
 	formulario = AuthenticationForm(request, data=request.POST or None)
 	if request.method == 'POST' and formulario.is_valid():
 		usuario = formulario.get_user()
 		login(request, usuario)
-		return redirect('lista_productos')
+		return _redirigir_despues_de_autenticacion(request, next_url)
 
-	return render(request, 'catalogo/login.html', {'formulario': formulario})
+	contexto['formulario'] = formulario
+	return render(request, 'catalogo/login.html', contexto)
+
+
+def registro_view(request):
+	next_url = request.POST.get('next') or request.GET.get('next', '')
+	contexto = {
+		'next': next_url,
+		'checkout_requiere_autenticacion': _es_retorno_checkout(next_url),
+	}
+
+	if request.user.is_authenticated:
+		return _redirigir_despues_de_autenticacion(request, next_url)
+
+	formulario = RegistroClienteForm(request.POST or None)
+	if request.method == 'POST' and formulario.is_valid():
+		usuario = formulario.save()
+		login(request, usuario)
+		return _redirigir_despues_de_autenticacion(request, next_url)
+
+	contexto['formulario'] = formulario
+	return render(request, 'catalogo/registro.html', contexto)
 
 
 def logout_view(request):
@@ -54,24 +112,72 @@ def logout_view(request):
 @login_required(login_url='login')
 def perfil_view(request):
 	usuario = request.user
+	accion = request.POST.get('accion') if request.method == 'POST' else None
 	datos_iniciales = {
 		'first_name': usuario.first_name,
 		'last_name': usuario.last_name,
 		'email': usuario.email,
 	}
-	formulario = PerfilDatosForm(request.POST or None, initial=datos_iniciales)
+	formulario = PerfilDatosForm(
+		request.POST if accion == 'guardar_datos' else None,
+		initial=datos_iniciales,
+	)
+	formulario_direccion = DireccionDespachoForm(
+		request.POST if accion == 'guardar_direccion' else None,
+		initial=request.session.get(CLAVE_DIRECCION_PERFIL, {}),
+	)
+	preferencias = {
+		**PREFERENCIAS_PERFIL_PREDETERMINADAS,
+		**request.session.get(CLAVE_PREFERENCIAS_PERFIL, {}),
+	}
 
-	if request.method == 'POST' and formulario.is_valid():
+	if accion == 'guardar_datos' and formulario.is_valid():
 		usuario.first_name = formulario.cleaned_data['first_name']
 		usuario.last_name = formulario.cleaned_data['last_name']
 		usuario.email = formulario.cleaned_data['email']
 		usuario.save(update_fields=['first_name', 'last_name', 'email'])
 		messages.success(request, 'Tus datos personales se actualizaron correctamente.')
-		return redirect('perfil')
+		return redirect(f"{reverse('perfil')}#datos-personales")
 
-	pedidos = Pedido.objects.filter(usuario=usuario).prefetch_related('items')
+	if accion == 'guardar_direccion' and formulario_direccion.is_valid():
+		request.session[CLAVE_DIRECCION_PERFIL] = formulario_direccion.cleaned_data
+		messages.success(request, 'La dirección de despacho se guardó en esta sesión.')
+		return redirect(f"{reverse('perfil')}#direcciones")
+
+	if accion == 'guardar_preferencias':
+		preferencias = {
+			'alertas_pedidos': request.POST.get('alertas_pedidos') == 'on',
+			'descuentos': request.POST.get('descuentos') == 'on',
+			'historial_en_sesion': request.POST.get('historial_en_sesion') == 'on',
+		}
+		request.session[CLAVE_PREFERENCIAS_PERFIL] = preferencias
+		messages.success(request, 'Tus preferencias se guardaron en esta sesión.')
+		return redirect(f"{reverse('perfil')}#configuracion")
+
+	if accion == 'ocultar_historial':
+		request.session[CLAVE_HISTORIAL_OCULTO] = True
+		messages.success(
+			request,
+			'El historial se ocultó durante esta sesión. Tus pedidos no se eliminaron.',
+		)
+		return redirect(f"{reverse('perfil')}#configuracion")
+
+	if accion == 'mostrar_historial':
+		request.session.pop(CLAVE_HISTORIAL_OCULTO, None)
+		messages.success(request, 'El historial de compras vuelve a estar visible.')
+		return redirect(f"{reverse('perfil')}#historial-compras")
+
+	historial_oculto = request.session.get(CLAVE_HISTORIAL_OCULTO, False)
+	pedidos = (
+		Pedido.objects.none()
+		if historial_oculto
+		else Pedido.objects.filter(usuario=usuario).prefetch_related('items')
+	)
 	return render(request, 'catalogo/perfil.html', {
 		'formulario': formulario,
+		'formulario_direccion': formulario_direccion,
+		'preferencias': preferencias,
+		'historial_oculto': historial_oculto,
 		'pedidos': pedidos,
 		'cantidad_pedidos': pedidos.count(),
 	})
@@ -86,12 +192,20 @@ def landing_page(request):
 
 def lista_productos(request):
 	query = request.GET.get('q', '').strip()
+	filtro = request.GET.get('filtro', '')
+	productos = Producto.objects.all()
+
 	if query:
-		productos = Producto.objects.filter(
+		productos = productos.filter(
 			Q(nombre__icontains=query) | Q(categoria__icontains=query)
 		)
+
+	if filtro == 'critico':
+		productos = productos.filter(stock__lte=5).order_by('stock')
+	elif filtro == 'disponibles':
+		productos = productos.filter(stock__gt=0).order_by('stock')
 	else:
-		productos = Producto.objects.all()
+		filtro = ''
 
 	total_registros = productos.count()
 	con_stock = productos.filter(stock__gt=0).count()
@@ -100,8 +214,14 @@ def lista_productos(request):
 		'total_registros': total_registros,
 		'con_stock': con_stock,
 		'query': query,
+		'filtro': filtro,
 	}
 	return render(request, 'catalogo/lista.html', contexto)
+
+
+def reporte_stock_critico(request):
+	productos = Producto.objects.filter(stock__lte=5).order_by('stock')
+	return render(request, 'catalogo/reporte_stock.html', {'productos': productos})
 
 
 
@@ -238,6 +358,7 @@ def vaciar_carrito(request):
 	return redirect(f"{reverse('lista_productos')}?carrito=abierto#carritoOffcanvas")
 
 
+@login_required(login_url='login')
 @require_POST
 def procesar_compra(request):
 	carrito = request.session.get(CLAVE_CARRITO, {})
@@ -291,21 +412,20 @@ def procesar_compra(request):
 			producto.stock = max(producto.stock - cantidad, 0)
 			producto.save()
 
-		if request.user.is_authenticated:
-			pedido = Pedido.objects.create(
-				usuario=request.user,
-				total=sum(producto.precio * cantidad for producto, cantidad in seleccionados),
+		pedido = Pedido.objects.create(
+			usuario=request.user,
+			total=sum(producto.precio * cantidad for producto, cantidad in seleccionados),
+		)
+		ItemPedido.objects.bulk_create([
+			ItemPedido(
+				pedido=pedido,
+				producto=producto,
+				nombre_producto=producto.nombre,
+				precio_unitario=producto.precio,
+				cantidad=cantidad,
 			)
-			ItemPedido.objects.bulk_create([
-				ItemPedido(
-					pedido=pedido,
-					producto=producto,
-					nombre_producto=producto.nombre,
-					precio_unitario=producto.precio,
-					cantidad=cantidad,
-				)
-				for producto, cantidad in seleccionados
-			])
+			for producto, cantidad in seleccionados
+		])
 
 	request.session.pop(CLAVE_CARRITO, None)
 	request.session.pop(CLAVE_SUBTOTALES_CARRITO, None)
@@ -313,7 +433,7 @@ def procesar_compra(request):
 	return redirect('lista_productos')
 
 
-@login_required(login_url='login')
+@staff_member_required(login_url='lista_productos')
 def editar_producto(request, producto_id):
 	producto = get_object_or_404(Producto, id=producto_id)
 
@@ -330,7 +450,7 @@ def editar_producto(request, producto_id):
 	return render(request, 'catalogo/formulario_producto.html', {'producto': producto, 'modo': 'Editar'})
 
 
-@login_required(login_url='login')
+@staff_member_required(login_url='lista_productos')
 def crear_producto(request):
 	productos = _cargar_productos()
 
@@ -350,7 +470,7 @@ def crear_producto(request):
 	return render(request, 'catalogo/formulario_producto.html', {'modo': 'Crear'})
 
 
-@login_required(login_url='login')
+@staff_member_required(login_url='lista_productos')
 @require_POST
 def eliminar_producto(request, producto_id):
 	producto = get_object_or_404(Producto, id=producto_id)

@@ -4,7 +4,7 @@
 {% block title %}Productos | Ferretería{% endblock %}
 {% block body_class %}catalog-page{% endblock %}
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'catalogo/css/catalog.css' %}?v=2">
+<link rel="stylesheet" href="{% static 'catalogo/css/catalog.css' %}?v=3">
 {% endblock %}
 
 {% block content %}
@@ -22,12 +22,29 @@
 		<label for="busqueda" class="visually-hidden">Buscar productos</label>
 		<i class="bi bi-search" aria-hidden="true"></i>
 		<input id="busqueda" type="search" name="q" value="{{ query }}" placeholder="Buscar por nombre o categoría">
+		{% if filtro %}<input type="hidden" name="filtro" value="{{ filtro }}">{% endif %}
 		<button type="submit">Buscar</button>
 	</form>
-	{% if user.is_authenticated %}
+	{% if user.is_staff %}
 	<a href="{% url 'crear_producto' %}" class="catalog-create"><i class="bi bi-plus-lg" aria-hidden="true"></i> Crear producto</a>
 	{% endif %}
 </div>
+
+<nav class="catalog-filters" aria-label="Filtrar productos">
+	<a class="catalog-filter{% if not filtro %} is-active{% endif %}"
+		href="{% url 'lista_productos' %}{% if query %}?q={{ query|urlencode }}{% endif %}"
+		{% if not filtro %}aria-current="page"{% endif %}>Todos</a>
+	<a class="catalog-filter catalog-filter--critical{% if filtro == 'critico' %} is-active{% endif %}"
+		href="{% url 'lista_productos' %}?filtro=critico{% if query %}&amp;q={{ query|urlencode }}{% endif %}"
+		{% if filtro == 'critico' %}aria-current="page"{% endif %}>
+		<i class="bi bi-exclamation-triangle" aria-hidden="true"></i> Stock crítico (≤ 5)
+	</a>
+	<a class="catalog-filter catalog-filter--available{% if filtro == 'disponibles' %} is-active{% endif %}"
+		href="{% url 'lista_productos' %}?filtro=disponibles{% if query %}&amp;q={{ query|urlencode }}{% endif %}"
+		{% if filtro == 'disponibles' %}aria-current="page"{% endif %}>
+		<i class="bi bi-check-circle" aria-hidden="true"></i> Disponibles
+	</a>
+</nav>
 
 <section class="catalog-stats" aria-label="Resumen del catálogo">
 	<div class="catalog-stat catalog-stat--total">
@@ -81,7 +98,7 @@
 				<span class="catalog-action catalog-action--disabled" aria-label="Producto agotado"><i class="bi bi-bag" aria-hidden="true"></i></span>
 				{% endif %}
 			</div>
-			{% if user.is_authenticated %}
+			{% if user.is_staff %}
 			<div class="catalog-product-card__admin">
 				<a href="{% url 'editar_producto' producto.id %}" class="catalog-action catalog-action--edit"><i class="bi bi-pencil" aria-hidden="true"></i> Editar</a>
 				<form method="post" action="{% url 'eliminar_producto' producto.id %}" class="catalog-card__delete-form">

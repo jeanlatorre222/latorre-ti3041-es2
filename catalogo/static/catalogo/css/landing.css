@@ -342,7 +342,7 @@
     overflow: hidden;
     padding: clamp(1.75rem, 3.2vw, 3.25rem);
     border: 1px solid rgb(255 255 255 / 10%);
-    background: #0a0a0a;
+    background: linear-gradient(145deg, #141414 0%, #0a0a0a 100%);
     color: #f5f5f5;
     text-decoration: none;
     transition: background-color 260ms ease, transform 260ms ease, box-shadow 260ms ease, border-color 260ms ease;
@@ -353,6 +353,7 @@
     z-index: 0;
     inset: 0;
     background:
+        radial-gradient(ellipse at 100% 0%, rgb(212 175 55 / 14%), transparent 48%),
         repeating-linear-gradient(135deg, transparent 0 14px, rgb(255 255 255 / 3%) 14px 15px, transparent 15px 29px),
         radial-gradient(ellipse at 72% 35%, var(--category-glow), transparent 65%);
     content: "";
@@ -384,16 +385,18 @@
     z-index: 1;
 }
 
-.home-category-card:hover {
+.home-category-card:hover,
+.home-category-card:focus-visible {
     z-index: 1;
-    transform: translateY(-4px);
-    border-color: rgb(255 255 255 / 28%);
+    transform: translateY(-6px);
+    border-color: rgba(212, 175, 55, 0.4);
     background-color: #0e0e0e;
-    box-shadow: 0 0 1.7rem rgb(255 255 255 / 5%), 0 0 1rem rgb(240 184 47 / 4%);
+    box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 42%), 0 0 1.5rem rgb(212 175 55 / 8%);
     color: #fff;
 }
 
-.home-category-card:hover::before {
+.home-category-card:hover::before,
+.home-category-card:focus-visible::before {
     opacity: 0.72;
     transform: scale(1.06);
 }
@@ -410,7 +413,8 @@
     transition: color 260ms ease, transform 260ms ease;
 }
 
-.home-category-card:hover .home-category-card__number {
+.home-category-card:hover .home-category-card__number,
+.home-category-card:focus-visible .home-category-card__number {
     transform: translateY(-3px);
     color: rgb(240 184 47 / 65%);
 }
@@ -429,7 +433,8 @@
     transition: color 240ms ease, border-color 240ms ease, background-color 240ms ease, transform 240ms ease;
 }
 
-.home-category-card:hover .home-category-card__icon {
+.home-category-card:hover .home-category-card__icon,
+.home-category-card:focus-visible .home-category-card__icon {
     transform: translateY(-3px);
     border-color: rgb(240 184 47 / 55%);
     background: rgb(240 184 47 / 8%);
@@ -462,8 +467,9 @@
     transition: color 220ms ease, transform 220ms ease;
 }
 
-.home-category-card:hover .home-category-card__arrow {
-    transform: translate(2px, -2px);
+.home-category-card:hover .home-category-card__arrow,
+.home-category-card:focus-visible .home-category-card__arrow {
+    transform: translate(3px, -3px);
     color: var(--home-yellow);
 }
 

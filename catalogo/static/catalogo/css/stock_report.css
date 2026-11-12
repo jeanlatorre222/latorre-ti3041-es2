@@ -1,0 +1,228 @@
+.stock-report-page {
+	--stock-bg: #080808;
+	--stock-surface: #121212;
+	--stock-border: rgb(255 255 255 / 9%);
+	--stock-muted: #a1a1a1;
+	min-height: 100vh;
+	background: var(--stock-bg);
+	color: #f5f5f5;
+	font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.stock-report-page .navbar {
+	border-bottom: 1px solid var(--stock-border);
+	background-color: rgb(5 5 5 / 94%) !important;
+}
+
+.stock-report-page .navbar .nav-link {
+	color: #c8c8c8;
+	font-size: 0.88rem;
+	transition: color 160ms ease;
+}
+
+.stock-report-page .navbar .nav-link:hover,
+.stock-report-page .navbar .nav-link:focus-visible {
+	color: #fff;
+}
+
+.stock-report-page main {
+	max-width: 78rem;
+	padding-top: clamp(2rem, 5vw, 4rem) !important;
+}
+
+.stock-report-heading {
+	display: flex;
+	align-items: end;
+	justify-content: space-between;
+	gap: 1.5rem;
+	margin-bottom: 1.75rem;
+}
+
+.stock-report-eyebrow {
+	display: flex;
+	align-items: center;
+	gap: 0.55rem;
+	margin: 0 0 0.75rem;
+	color: #ff7777;
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 0.13em;
+	text-transform: uppercase;
+}
+
+.stock-report-heading h1 {
+	margin: 0;
+	color: #f7f7f7;
+	font-size: clamp(1.8rem, 4vw, 2.7rem);
+	font-weight: 750;
+	letter-spacing: -0.045em;
+}
+
+.stock-report-heading > div > p:last-child {
+	margin: 0.7rem 0 0;
+	color: var(--stock-muted);
+	font-size: 0.92rem;
+}
+
+.stock-report-back {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	flex: 0 0 auto;
+	padding: 0.7rem 0.9rem;
+	border: 1px solid var(--stock-border);
+	border-radius: 0.35rem;
+	color: #dedede;
+	font-size: 0.82rem;
+	text-decoration: none;
+	transition: border-color 160ms ease, color 160ms ease;
+}
+
+.stock-report-back:hover,
+.stock-report-back:focus-visible {
+	border-color: rgb(255 255 255 / 28%);
+	color: #fff;
+}
+
+.stock-report-card {
+	overflow: hidden;
+	border: 1px solid var(--stock-border);
+	border-radius: 0.55rem;
+	background: linear-gradient(145deg, rgb(255 255 255 / 2%), transparent 40%), var(--stock-surface);
+	box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 35%);
+}
+
+.stock-report-card__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 1.25rem 1.5rem;
+	border-bottom: 1px solid var(--stock-border);
+}
+
+.stock-report-card__header h2 {
+	margin: 0;
+	color: #f2f2f2;
+	font-size: 1rem;
+	font-weight: 650;
+}
+
+.stock-report-card__header p {
+	margin: 0.35rem 0 0;
+	color: var(--stock-muted);
+	font-size: 0.78rem;
+}
+
+.stock-report-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	padding: 0.45rem 0.65rem;
+	border: 1px solid rgb(255 91 91 / 22%);
+	border-radius: 999px;
+	background: rgb(255 70 70 / 7%);
+	color: #ff9999;
+	font-size: 0.72rem;
+	white-space: nowrap;
+}
+
+.stock-report-table {
+	width: 100%;
+	border-collapse: collapse;
+	color: #d3d3d3;
+	font-size: 0.86rem;
+}
+
+.stock-report-table th,
+.stock-report-table td {
+	padding: 1rem 1.5rem;
+	border-bottom: 1px solid var(--stock-border);
+	text-align: left;
+}
+
+.stock-report-table thead th {
+	background: rgb(255 255 255 / 2%);
+	color: #929292;
+	font-size: 0.68rem;
+	font-weight: 650;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+.stock-report-table tbody tr:last-child > * {
+	border-bottom: 0;
+}
+
+.stock-report-product {
+	color: #f2f2f2;
+	font-weight: 600;
+	text-decoration: none;
+}
+
+.stock-report-product:hover,
+.stock-report-product:focus-visible {
+	color: #ff9999;
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+}
+
+.stock-report-quantity {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	color: #ff9a76;
+	font-size: 0.78rem;
+	font-weight: 650;
+	white-space: nowrap;
+}
+
+.stock-report-quantity--empty {
+	color: #ff7777;
+}
+
+.stock-report-empty {
+	height: 13rem;
+	color: var(--stock-muted) !important;
+	text-align: center !important;
+}
+
+.stock-report-empty > * {
+	display: block;
+	margin: 0 auto;
+}
+
+.stock-report-empty .bi {
+	margin-bottom: 0.65rem;
+	color: #76c99a;
+	font-size: 1.7rem;
+}
+
+.stock-report-empty strong {
+	margin-bottom: 0.3rem;
+	color: #eee;
+	font-size: 0.95rem;
+}
+
+.stock-report-empty span {
+	font-size: 0.8rem;
+}
+
+@media (max-width: 640px) {
+	.stock-report-heading {
+		align-items: start;
+		flex-direction: column;
+	}
+
+	.stock-report-card__header {
+		align-items: start;
+		flex-direction: column;
+		padding: 1rem;
+	}
+
+	.stock-report-table th,
+	.stock-report-table td {
+		padding: 0.85rem 1rem;
+	}
+}

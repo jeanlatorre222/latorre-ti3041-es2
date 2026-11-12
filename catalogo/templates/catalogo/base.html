@@ -15,6 +15,7 @@
 		<div class="container-fluid px-3 px-lg-5">
 			<a class="navbar-brand" href="{% url 'landing_page' %}">Ferretería</a>
 			<div class="navbar-nav ms-auto">
+				<a class="nav-link" href="{% url 'lista_productos' %}"><i class="bi bi-grid me-1" aria-hidden="true"></i>Catálogo</a>
 				<button class="btn btn-outline-light position-relative me-3 cart-trigger" type="button" data-bs-toggle="offcanvas" data-bs-target="#carritoOffcanvas" aria-controls="carritoOffcanvas" title="Abrir carrito">
 					<i class="bi bi-cart3" aria-hidden="true"></i>
 					<span class="visually-hidden">Carrito de compras</span>
@@ -22,10 +23,13 @@
 				</button>
 				{% if user.is_authenticated %}
 					<a class="nav-link" href="{% url 'perfil' %}"><i class="bi bi-person-circle me-1"></i>Mi cuenta</a>
+					{% if user.is_staff %}
 					<a class="nav-link" href="{% url 'crear_producto' %}">Crear Producto</a>
+					{% endif %}
 					<a class="nav-link" href="{% url 'logout' %}">Cerrar Sesión</a>
 				{% else %}
-				<a class="btn btn-outline-light btn-sm" href="{% url 'login' %}">Iniciar Sesión</a>
+				<a class="btn btn-outline-light btn-sm me-2" href="{% url 'login' %}">Iniciar Sesión</a>
+				<a class="btn btn-warning btn-sm" href="{% url 'registro' %}">Registrarse</a>
 				{% endif %}
 			</div>
 		</div>

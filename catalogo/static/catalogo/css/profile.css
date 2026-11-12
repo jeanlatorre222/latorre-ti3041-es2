@@ -560,6 +560,113 @@
     border-bottom: 0;
 }
 
+.profile-form--session,
+.profile-settings {
+    padding-top: 1.25rem;
+}
+
+.profile-settings {
+    display: grid;
+}
+
+.profile-setting {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, .07);
+    cursor: pointer;
+}
+
+.profile-setting > span {
+    display: grid;
+    gap: .25rem;
+}
+
+.profile-setting strong {
+    color: #e7e7e7;
+    font-size: .84rem;
+    font-weight: 550;
+}
+
+.profile-setting small {
+    color: #898989;
+    font-size: .75rem;
+    line-height: 1.5;
+}
+
+.profile-page .profile-setting .form-check-input {
+    width: 2.5rem;
+    height: 1.35rem;
+    flex: 0 0 auto;
+    margin: 0;
+    border-color: #555;
+    background-color: #252525;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.profile-page .profile-setting .form-check-input:checked {
+    border-color: #d5aa40;
+    background-color: #d5aa40;
+}
+
+.profile-page .profile-setting .form-check-input:focus {
+    border-color: #edc65d;
+    box-shadow: 0 0 0 3px rgba(211, 164, 45, .16);
+}
+
+.profile-settings__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem 1.25rem;
+    margin-top: 1.25rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+}
+
+.profile-settings__actions form {
+    margin: 0;
+}
+
+.profile-settings__action {
+    display: inline-flex;
+    min-height: 2.5rem;
+    align-items: center;
+    gap: .5rem;
+    padding: .55rem .75rem;
+    border: 1px solid rgba(213, 170, 64, .35);
+    border-radius: 5px;
+    background: rgba(213, 170, 64, .08);
+    color: #e0bd5a;
+    font: inherit;
+    font-size: .78rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color .2s ease, background .2s ease, color .2s ease;
+}
+
+.profile-settings__action:hover,
+.profile-settings__action:focus-visible {
+    border-color: #d5aa40;
+    background: rgba(213, 170, 64, .15);
+    color: #f0cd66;
+}
+
+.profile-settings__action--muted {
+    border-color: rgba(255, 255, 255, .12);
+    background: transparent;
+    color: #aaa;
+}
+
+.profile-settings__action--muted:hover,
+.profile-settings__action--muted:focus-visible {
+    border-color: rgba(255, 255, 255, .25);
+    background: rgba(255, 255, 255, .04);
+    color: #eee;
+}
+
 .profile-page #messages .alert,
 .profile-page .alert {
     border: 1px solid rgba(211, 164, 45, .3);

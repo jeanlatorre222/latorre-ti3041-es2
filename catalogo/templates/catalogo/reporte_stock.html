@@ -1,0 +1,70 @@
+{% extends 'catalogo/base.html' %}
+{% load humanize static %}
+
+{% block title %}Stock crítico | Ferretería{% endblock %}
+{% block body_class %}stock-report-page{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'catalogo/css/stock_report.css' %}">
+{% endblock %}
+
+{% block content %}
+<header class="stock-report-heading">
+	<div>
+		<p class="stock-report-eyebrow"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i> Reporte 2 · Inventario</p>
+		<h1>Productos con stock crítico</h1>
+		<p>Productos con cinco unidades o menos, ordenados desde el nivel más bajo.</p>
+	</div>
+	<a class="stock-report-back" href="{% url 'lista_productos' %}">
+		<i class="bi bi-arrow-left" aria-hidden="true"></i> Volver al catálogo
+	</a>
+</header>
+
+<section class="stock-report-card" aria-labelledby="stock-report-table-heading">
+	<div class="stock-report-card__header">
+		<div>
+			<h2 id="stock-report-table-heading">Resumen de inventario</h2>
+			<p>{{ productos|length }} producto{{ productos|length|pluralize:"s" }} requiere{{ productos|length|pluralize:"n" }} atención</p>
+		</div>
+		<span class="stock-report-badge"><i class="bi bi-bell" aria-hidden="true"></i> Umbral: 5 unidades</span>
+	</div>
+
+	<div class="table-responsive">
+		<table class="stock-report-table">
+			<caption class="visually-hidden">Productos con stock crítico ordenados de menor a mayor cantidad</caption>
+			<thead>
+				<tr>
+					<th scope="col">Producto</th>
+					<th scope="col">Categoría</th>
+					<th scope="col">Precio</th>
+					<th scope="col">Stock disponible</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for producto in productos %}
+				<tr>
+					<th scope="row">
+						<a class="stock-report-product" href="{% url 'detalle_producto' producto.id %}">{{ producto.nombre }}</a>
+					</th>
+					<td>{{ producto.categoria }}</td>
+					<td>${{ producto.precio|intcomma }}</td>
+					<td>
+						<span class="stock-report-quantity{% if producto.stock == 0 %} stock-report-quantity--empty{% endif %}">
+							<i class="bi bi-exclamation-circle" aria-hidden="true"></i>
+							{{ producto.stock }} unidad{{ producto.stock|pluralize:"es" }}
+						</span>
+					</td>
+				</tr>
+				{% empty %}
+				<tr>
+					<td class="stock-report-empty" colspan="4">
+						<i class="bi bi-check-circle" aria-hidden="true"></i>
+						<strong>Sin alertas de stock</strong>
+						<span>Todos los productos tienen más de cinco unidades disponibles.</span>
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</section>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'catalogo/base.html' %}
+{% load static %}
+
+{% block title %}Crear cuenta | Ferretería{% endblock %}
+{% block body_class %}secondary-page auth-page{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'catalogo/css/secondary.css' %}?v=2">
+{% endblock %}
+{% block main_class %}secondary-main auth-main{% endblock %}
+
+{% block content %}
+<section class="precision-card auth-card" aria-labelledby="register-title">
+    <p class="secondary-eyebrow"><span></span> Crea tu cuenta</p>
+    <h1 id="register-title">Registrarse</h1>
+    <p class="secondary-lead">Crea una cuenta para proteger tu compra y consultar tu historial.</p>
+    {% if checkout_requiere_autenticacion %}
+    <div class="secondary-alert" role="status">
+        Para finalizar tu compra, crea una cuenta o inicia sesión. Tu carrito se conservará.
+    </div>
+    {% endif %}
+    <form method="post" class="secondary-form">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+        {% if formulario.non_field_errors %}
+        <div class="secondary-alert" role="alert">
+            {{ formulario.non_field_errors }}
+        </div>
+        {% endif %}
+        <div class="secondary-field">
+            <label for="{{ formulario.username.id_for_label }}">{{ formulario.username.label }}</label>
+            {{ formulario.username }}
+            {% if formulario.username.help_text %}
+            <div class="secondary-help">{{ formulario.username.help_text }}</div>
+            {% endif %}
+            {% for error in formulario.username.errors %}
+            <div class="secondary-error">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="secondary-field">
+            <label for="{{ formulario.email.id_for_label }}">{{ formulario.email.label }}</label>
+            {{ formulario.email }}
+            {% if formulario.email.help_text %}
+            <div class="secondary-help">{{ formulario.email.help_text }}</div>
+            {% endif %}
+            {% for error in formulario.email.errors %}
+            <div class="secondary-error">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="secondary-field">
+            <label for="{{ formulario.password1.id_for_label }}">{{ formulario.password1.label }}</label>
+            {{ formulario.password1 }}
+            {% if formulario.password1.help_text %}
+            <div class="secondary-help">{{ formulario.password1.help_text }}</div>
+            {% endif %}
+            {% for error in formulario.password1.errors %}
+            <div class="secondary-error">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="secondary-field">
+            <label for="{{ formulario.password2.id_for_label }}">{{ formulario.password2.label }}</label>
+            {{ formulario.password2 }}
+            {% if formulario.password2.help_text %}
+            <div class="secondary-help">{{ formulario.password2.help_text }}</div>
+            {% endif %}
+            {% for error in formulario.password2.errors %}
+            <div class="secondary-error">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <button type="submit" class="secondary-button secondary-button--primary">
+            Crear cuenta <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </button>
+    </form>
+    <a class="secondary-back-link" href="{% url 'login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">
+        ¿Ya tienes cuenta? Inicia sesión
+    </a>
+    <a class="secondary-back-link" href="{% url 'lista_productos' %}">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i> Volver al catálogo
+    </a>
+</section>
+{% endblock %}

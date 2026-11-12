@@ -13,8 +13,14 @@
     <p class="secondary-eyebrow"><span></span> Acceso seguro</p>
     <h1 id="login-title">Iniciar sesión</h1>
     <p class="secondary-lead">Accede para administrar tus productos y continuar con tu compra.</p>
+    {% if checkout_requiere_autenticacion %}
+    <div class="secondary-alert" role="status">
+        Para finalizar tu compra, inicia sesión o crea una cuenta. Tu carrito se conservará.
+    </div>
+    {% endif %}
     <form method="post" class="secondary-form">
         {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
         {% if formulario.non_field_errors %}
         <div class="secondary-alert" role="alert">
             {{ formulario.non_field_errors }}
@@ -36,6 +42,9 @@
         </div>
         <button type="submit" class="secondary-button secondary-button--primary">Entrar <i class="bi bi-arrow-right" aria-hidden="true"></i></button>
     </form>
+    <a class="secondary-back-link" href="{% url 'registro' %}{% if next %}?next={{ next|urlencode }}{% endif %}">
+        ¿No tienes cuenta? Regístrate
+    </a>
     <a class="secondary-back-link" href="{% url 'lista_productos' %}"><i class="bi bi-arrow-left" aria-hidden="true"></i> Volver al catálogo</a>
 </section>
 {% endblock %}

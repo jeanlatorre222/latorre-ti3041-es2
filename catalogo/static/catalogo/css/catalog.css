@@ -159,6 +159,59 @@
     padding-inline: 1.1rem;
 }
 
+.catalog-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: -0.5rem 0 1.5rem;
+}
+
+.catalog-filter {
+    display: inline-flex;
+    min-height: 2.45rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid var(--catalog-line);
+    border-radius: 999px;
+    background: var(--catalog-surface);
+    color: var(--catalog-muted);
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease;
+}
+
+.catalog-filter:hover,
+.catalog-filter:focus-visible {
+    border-color: rgb(240 184 75 / 45%);
+    color: var(--catalog-text);
+}
+
+.catalog-filter:focus-visible {
+    outline: 2px solid var(--catalog-amber);
+    outline-offset: 2px;
+}
+
+.catalog-filter.is-active {
+    border-color: rgb(240 184 75 / 38%);
+    background: rgb(240 184 75 / 11%);
+    color: #f5cd7a;
+}
+
+.catalog-filter--critical.is-active {
+    border-color: rgb(248 113 113 / 35%);
+    background: rgb(248 113 113 / 9%);
+    color: #ff9a9a;
+}
+
+.catalog-filter--available.is-active {
+    border-color: rgb(85 197 161 / 35%);
+    background: rgb(85 197 161 / 9%);
+    color: #8ce0bf;
+}
+
 .catalog-stats {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
